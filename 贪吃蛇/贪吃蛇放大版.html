@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>贪吃蛇</title>
+        <style>
+        	*{
+				margin: 0;
+				padding: 0;
+        	}
+        	.box{
+        		width: 600px;
+        		height: 600px;
+        		border: 1px solid #000;
+        		position: relative;
+        		margin: 10px auto;
+                background-color: rgba(0,0,0,0.6);
+        	}
+        	.snake_body{
+        		width: 15px;
+        		height: 15px;
+        		background-color: red;
+        		border-radius: 50%;
+        		position: absolute;
+        		left: 0;
+        		bottom: 0;
+                opacity: 0.8;
+        	}
+        	#head{
+        		background-color: #000;
+        		z-index: 22;
+        	}
+        	.over{
+        		width: 100%;
+        		height: 100%;
+        		background-color: rgba(0,0,0,0.5);
+        		position: absolute;
+        		left: 0;
+        		top: 0;
+        		display: none;
+        		line-height: 600px;
+        		text-align: center;
+        		font-size: 60px;
+                z-index: 2222;
+        	}
+            .info{
+                width: 200px;
+                height: 200px;
+                border: 1px solid #000;
+                position: absolute;
+                right: 100px;
+                top: 10px;
+                text-align: center;
+            }
+            .info p:first-child{
+                line-height: 50px;
+            }
+            .info p:last-child{
+                line-height: 30px;
+            }
+            .score{
+                color: #fff;
+                font-size: 20px;
+            }
+        </style>
+    </head>
+    <body>
+    	<div class="box">
+            <div class="score">score: <span class='scoreNum'>0</span></div>
+    		<div id="head" class="snake_body"></div>
+    		<div class="snake_body"></div>
+    		<div class="snake_body"></div>
+    		<div class="snake_body"></div>
+    		<div class="snake_body"></div>
+    		<div class="over">GAME OVER</div>
+    	</div>
+         <div class="info">
+            <p>游戏说明:</p>
+            <p>方向键控制上下左右,空格为暂停</p>
+        </div>
+    	<script>
+    		onload=function(){
+    			//获取最外面的div
+    			var box=document.querySelector('.box');
+    			//获取蛇头
+    			var head=document.querySelector('#head');
+    			//获取蛇的各个部位
+    			var body=document.querySelectorAll(".snake_body");
+    			var over=document.querySelector('.over');
+    			//每节蛇身的长度
+    			var length=body[0].offsetHeight;
+    			//定义一个数组,用来存储蛇的每节身子
+    			var arr=[];
+    			//定义一个变量用来存储方向
+    			var position='up';
+    			//定义一个变量,记录速度
+    			var speed=15;
+    			var timeId=null;
+    			var newFood;
+                //记录数量
+                var index=0;
+                var score=document.querySelector('.scoreNum');
+    			// 蛇的初始位置
+    			for (var i = 0; i < body.length; i++) {
+    				body[i].style.left='300px';
+    				body[i].style.bottom=length*(body.length-1-i)+'px';
+    				arr.push(body[i]);
+    			}
+    			//蛇头的位置
+    			var headLeft=head.offsetLeft;
+    			var headTop=head.offsetTop;
+    			var flag=true;
+    			//创建食物
+    			createFood();
+    			//获取位置并开始移动
+    			getPosition();
+    			//吃豆豆
+    			eatFood();
+    			
+    			function getPosition(){
+    				//获取键盘上下左右对应的值
+    				window.onkeydown=function(event){
+	    				event=event||window.event;
+	    				if(flag){
+
+		    				flag=false;
+		    				switch(event.keyCode){
+		    				case 37:
+		    					if(position!='right'){	
+		    						position='left';
+		    					//获取到位置以后开始移动
+		    						startMove(position);
+		    					}
+		    					break;
+		    				case 38:
+		    					if(position!='down'){
+
+		    					position='up';
+		    					startMove(position);
+		    					}
+		    					break;
+		    				case 39:
+		    					if(position!='left'){
+
+		    					position='right';
+		    					startMove(position);
+		    					}
+		    					break;
+		    				case 40:
+		    					if(position!='up'){
+
+		    					position='down';
+		    					startMove(position);
+		    					}
+		    					break;
+		    				case 32:
+		    					clearInterval(timeId);
+		    					break;
+	    				}//end switch
+	    			}
+    				}//end onkeydown
+    			}//end function
+    			
+    			function startMove(){
+    				clearInterval(timeId);
+    				timeId=setInterval(function(){
+    					eatFood();
+    					// headLeft=head.offsetLeft;
+	    				// headTop=head.offsetTop; 
+    					if(position=='left'){
+    						head.style.top=headTop+'px';
+	    					head.style.left=headLeft-speed+'px';
+	    				}
+	    				if(position=='right'){
+	    					head.style.top=headTop+'px';
+	    					head.style.left=headLeft+speed+'px';
+	    				}
+	    				if(position=='up'){
+	    					head.style.left=headLeft+'px';
+	    					head.style.top=headTop-speed+'px';
+	    				}
+	    				if(position=='down'){
+	    					head.style.left=headLeft+'px';
+	    					head.style.top=headTop+speed+'px';
+	    				}
+	    				for(var i=arr.length-1;i>0;i--){
+	    					if(i==1){
+	    						arr[i].style.left=headLeft+'px';
+	    						arr[i].style.top=headTop+'px';
+	    					}else{
+	    						arr[i].style.left=arr[i-1].offsetLeft+'px';
+	    						arr[i].style.top=arr[i-1].offsetTop+'px';
+	    					}
+	    				}
+	    				headLeft=head.offsetLeft;
+	    				headTop=head.offsetTop;
+	    				gameOver();
+	    				flag=true;
+	    				// console.log(headLeft);
+    				},100)
+    				
+    			}
+    			function createFood(){
+    				newFood=document.createElement('div');
+    				newFood.className='snake_body';
+    				newFood.style.left=parseInt(Math.random()*40)*15+'px';
+    				newFood.style.top=parseInt(Math.random()*40)*15+'px';
+    				box.appendChild(newFood);
+    			}
+
+    			function eatFood(){
+    				// console.log(headLeft+":"+newFood.offsetLeft);
+    				// console.log(headTop+":"+newFood.offsetTop);
+    				if(headLeft==newFood.offsetLeft&&headTop==newFood.offsetTop){
+    					arr.push(newFood);
+                        index++;
+                        score.innerHTML=index;
+    					createFood();
+    				}
+    			}//end eatFood
+
+    			function gameOver(){
+    				if(headLeft<0||headLeft>(600-length)||headTop<0||headTop>(600-length)){
+    					clearInterval(timeId);
+    					over.style.display='block';
+    					// alert('GAME OVER');
+    				}
+    				for(var i=1;i<arr.length;i++){
+    					if(headLeft==arr[i].offsetLeft&&headTop==arr[i].offsetTop){
+    						clearInterval(timeId);
+    						over.style.display='block';
+    					}
+    				}
+  
+    			}
+
+    		}
+    	</script>
+    </body>
+</html>

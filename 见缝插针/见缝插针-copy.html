@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+        body{
+            margin:0;
+            padding:0;
+        }
+        .box{
+            width: 400px;
+            height: 600px;
+            border:1px solid black;
+            background: rgb(224,224,224);
+            position: relative;
+            /*margin:0 auto;*/
+            overflow: hidden;
+        }
+        .start{
+            width: 400px;
+            height: 600px;
+            background: rgba(0,0,0,0.7);
+            position: absolute;
+            left:1px;
+            top: 1px;
+            text-align: center;
+            line-height:600px;
+            font-size: 40px;
+            color: #fff;
+        }
+        .startBtn{
+            width: 150px;
+            height: 60px;
+            border:2px solid gray;
+            position: absolute;
+            top: 350px;
+            left:125px;
+            background-color: rgba(188,188,188,0.8);
+            border-radius: 20px;
+            text-align: center;
+            line-height: 60px;
+            font-size: 25px;
+            color: rgba(88,100,100,0.8);
+            cursor: pointer;
+        }
+        .over{
+            width: 400px;
+            height: 600px;
+            background-color: rgba(0,0,0,0.7);
+            position: absolute;
+            top:1px;
+            left:1px;
+            text-align: center;
+            line-height:600px;
+            font-size: 40px;
+            color: #FFF;
+            display: none;
+        }
+        .niu{
+            width: 400px;
+            height: 600px;
+            background-color: rgba(0,0,0,0.7);
+            position: absolute;
+            left:1px;
+            top:1px;
+            text-align: center;
+            line-height: 600px;
+            color: #FFFFFF;
+            font-size: 150px;
+            display: none;
+        }
+        .wrap{
+            width: 400px;
+            height: 400px;
+            /*border:1px solid #000;*/
+            position: relative;
+            overflow: hidden;
+        }
+        .center{
+            width: 50px;
+            height: 50px;
+            background-color: #000;
+            position: absolute;
+            top: 175px;
+            left:175px;
+            border-radius: 50%;
+        }
+        .line{
+            width: 2px;
+            height: 124px;
+            background-color: red;
+            position: absolute;
+            left:199px;
+            top:76px;
+            transform-origin: 50% 100%;
+        }
+        .ball{
+            width: 26px;
+            height: 26px;
+            background: #000;
+            border-radius: 50%;
+            position: absolute;
+            left:-12px;
+            top:-26px;
+        }
+        .newline{
+            width: 2px;
+            height: 124px;
+            background-color: #000;
+            position: absolute;
+            left:199px;
+            top:76px;
+            transform-origin: 50% 100%;
+        }
+        .newball{
+            width: 26px;
+            height: 26px;
+            background: #000;
+            border-radius: 50%;
+            position: absolute;
+            left:-12px;
+            top:-26px;
+        }
+        .num{
+            width: 26px;
+            height: 26px;
+            background-color: #000000;
+            border-radius: 50%;
+            color: #FFF;
+            text-align: center;
+            line-height: 26px;
+            font-size: 15px;
+            margin-left: 187px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box"></div>
+    <div class="start">
+        见缝插针<br>
+        <div class="startBtn">START</div>
+    </div>
+    <div class="over">游戏结束</div>
+    <div class="niu">厉害</div>
+</body>
+    <script>
+        //获取开始的层
+        var start=document.querySelector(".start");
+        //获取开始按钮，为开始按钮注册点击事件
+        var startBtn=document.querySelector(".startBtn");
+        startBtn.onclick=function () {
+            //点击开始按钮，使开始层隐藏
+            start.style.display="none";
+        };
+
+
+        //获取box层，在box层中添加旋转主体
+        var body_=document.querySelector(".box");
+        var wrap=document.createElement("div");
+        wrap.className="wrap";
+        body_.appendChild(wrap);
+        //创建旋转的中心圆球
+        var center=document.createElement("div");
+        center.className="center";
+        body_.appendChild(center);
+        //创建旋转的线和小球
+        var index=1;
+        var x=5;
+        //定义一个数组，用来存储所有的线旋转的角度，方便计算
+        var arr=[];
+        function made() {
+            //通过for循环创建线和顶端小球
+            for(var i=0;i<x;i++){
+                var line=document.createElement("div");
+                //为创建出来的线和小球添加类样式
+                line.className="line";
+                line.setAttribute("id","init-line"+(i+1));
+                //旋转每条线
+                line.style.transform="rotate("+(i*360/x)+"deg)";
+                arr.push(i*360/x);
+                var ball=document.createElement("div");
+                ball.className="ball";
+                line.appendChild(ball);
+                wrap.appendChild(line);
+            }
+        }
+        //设置定时器，让圆球旋转
+        var timer=null;
+        //先定义一个变量，用来计算每次旋转的角度
+        var z=0;
+        timer=setInterval(function () {
+            z++;
+            //旋转的角度
+            wrap.style.transform="rotate("+z+"deg)";
+            //旋转原点
+            wrap.style.transformOrigin="50% 50%";
+            //每次旋转到360度就清零
+            if(z>=360){
+                z=0;
+            }else{
+                z++;
+            }
+        },20)
+
+        //创建数字小球
+        for(var i=0 ; i<10 ; i++){
+            var num=document.createElement("div");
+            num.className="num";
+            num.innerHTML=10-i;
+            body_.appendChild(num);
+        }
+        //注册点击事件
+        body_.onclick=function () {
+            //创建一条新线
+            var newline=document.createElement("div");
+            newline.className="newline";
+            //新线旋转的角度，默认不旋转时第一条线在新添加的线的反方向，第一条线是0度，其他的线让180减去第一条线旋转的角度
+            var newZ=180-z;
+            if(newZ<=0){
+                //如果第一条线旋转角度超过180度，即newZ小于等于0，新添加的线在第一条线的左侧，所以就让360度减去新线在第一条线左侧的角度
+                arr.push(newZ+360);
+            }else{
+                //如果第一条线旋转角度不超过180度，新添加的线在第一条线的右侧，角度就是180度减去第一条线旋转的角度
+                arr.push(newZ);
+            }//end if
+            newline.style.transform="rotate("+newZ+"deg)";
+            var newball=document.createElement("div");
+            newball.className="newball";
+            newline.appendChild(newball);
+            wrap.appendChild(newline);
+            //通过for循环遍历数组中的元素（即每条线的角度），如果角度之差小于等于10度或者大于等于350度小于等于360度时，游戏结束
+            for(var i=0;i<arr.length-1;i++){
+//                if(Math.abs(arr[i]-arr[arr.length-1])<=10){//源代码有bug，处理后的代码如下
+                if(Math.abs(arr[i]-arr[arr.length-1])<=10||(Math.abs(arr[i]-arr[arr.length-1])<=360&&Math.abs(arr[i]-arr[arr.length-1])>=350)){
+                    clearInterval(timer);
+                    gameover();
+                }//end if
+            }//end for
+            var index=0;
+            var nums=document.querySelectorAll(".num");
+            body_.removeChild(nums[index]);
+            console.log(nums.length);
+            if(nums.length==1){
+                next();
+            }//end if
+        };
+
+        var niu=document.querySelector(".niu");
+        function next() {
+            clearInterval(timer);
+            niu.style.display="block";
+        }
+        made();
+
+        var over=document.querySelector(".over");
+        function gameover() {
+            over.style.display="block";
+        }
+    </script>
+
+</html>
